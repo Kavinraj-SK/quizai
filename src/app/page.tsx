@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Zap, BookOpen, Gauge, Hash, Clock, ChevronRight, Sparkles } from "lucide-react";
 import { useQuizStore } from "@/store";
+import { useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 import { cn, difficultyColor } from "@/lib/utils";
 import type { Difficulty } from "@/types";
 
@@ -21,11 +23,18 @@ export default function HomePage() {
   const { startSession, setGenerating, setGenerationError, isGenerating, generationError } =
     useQuizStore();
 
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) router.push('/login')
+    })
+  }, [])
+
   const [topic, setTopic] = useState("");
   const [numQuestions, setNumQuestions] = useState(10);
   const [difficulty, setDifficulty] = useState<Difficulty>("Medium");
   const [timerEnabled, setTimerEnabled] = useState(false);
   const [timeLimitSeconds, setTimeLimitSeconds] = useState(30);
+  const [customCount, setCustomCount] = useState(false);
 
   async function handleGenerate() {
     if (!topic.trim()) return;
@@ -76,6 +85,16 @@ export default function HomePage() {
         </p>
       </div>
 
+      {/* LMS Mode button */}
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={() => router.push('/role-select')}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl border border-acid/30 text-acid text-sm hover:bg-acid/10 transition-all"
+        >
+          🏫 Teacher / Student Mode
+        </button>
+      </div>
+
       {/* Form card */}
       <div
         className="glass rounded-2xl p-6 md:p-8 space-y-6 opacity-0 animate-slide-up stagger-2"
@@ -118,14 +137,14 @@ export default function HomePage() {
           <label className="flex items-center gap-2 text-xs font-mono text-ghost/40 uppercase tracking-widest mb-2">
             <Hash className="w-3 h-3" /> Questions
           </label>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-5 gap-2">
             {QUESTION_COUNTS.map((n) => (
               <button
                 key={n}
-                onClick={() => setNumQuestions(n)}
+                onClick={() => { setNumQuestions(n); setCustomCount(false); }}
                 className={cn(
                   "py-2.5 rounded-lg text-sm font-medium border transition-all",
-                  numQuestions === n
+                  numQuestions === n && !customCount
                     ? "border-acid bg-acid/10 text-acid"
                     : "border-ghost/10 text-ghost/40 hover:border-ghost/30 hover:text-ghost"
                 )}
@@ -133,7 +152,29 @@ export default function HomePage() {
                 {n}
               </button>
             ))}
+            <button
+              onClick={() => setCustomCount(true)}
+              className={cn(
+                "py-2.5 rounded-lg text-sm font-medium border transition-all",
+                customCount
+                  ? "border-acid bg-acid/10 text-acid"
+                  : "border-ghost/10 text-ghost/40 hover:border-ghost/30 hover:text-ghost"
+              )}
+            >
+              Custom
+            </button>
           </div>
+          {customCount && (
+            <input
+              type="number"
+              min={1}
+              max={50}
+              value={numQuestions}
+              onChange={(e) => setNumQuestions(Number(e.target.value))}
+              placeholder="Enter number (1-50)"
+              className="mt-2 w-full bg-ink/60 border border-acid/30 rounded-xl px-4 py-2.5 text-acid placeholder:text-ghost/20 focus:outline-none focus:border-acid/50 transition-all text-sm"
+            />
+          )}
         </div>
 
         {/* Difficulty */}
