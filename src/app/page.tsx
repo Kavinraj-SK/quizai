@@ -73,7 +73,7 @@ export default function HomePage() {
       <div className="mb-12 opacity-0 animate-slide-up stagger-1" style={{ animationFillMode: "forwards" }}>
         <div className="flex items-center gap-2 mb-4">
           <span className="font-mono text-xs text-acid tracking-widest uppercase bg-acid/10 px-3 py-1 rounded-full border border-acid/20">
-            GPT-4o Powered
+            AI Powered
           </span>
         </div>
         <h1 className="font-display text-7xl md:text-9xl text-ghost leading-none tracking-wider mb-4">
