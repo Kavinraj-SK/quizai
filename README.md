@@ -1,49 +1,60 @@
-# QuizAI ⚡
+# QuizAI 🧠
 
-> AI-powered quiz application built with Next.js 14, GPT-4o, and Clerk auth.
+> AI-powered quiz and learning management platform built with Next.js 14, Cohere, and Supabase.
 
-![QuizAI](https://img.shields.io/badge/Next.js-14-black?style=flat-square) ![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?style=flat-square) ![GPT-4o](https://img.shields.io/badge/GPT--4o-Powered-green?style=flat-square)
+![QuizAI](https://img.shields.io/badge/Next.js-14-black?style=flat-square) ![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?style=flat-square) ![Cohere](https://img.shields.io/badge/Cohere-Powered-green?style=flat-square)
+
+---
+
+## Live Demo
+🔗 https://quizai-weld.vercel.app
 
 ---
 
 ## Features
 
-### Core
-- 🤖 **AI Quiz Generation** — GPT-4o generates contextual MCQs with explanations, tailored by topic, difficulty, and count
+### Core Quiz App
+- 🤖 **AI Quiz Generation** — Cohere generates contextual MCQs tailored by topic, difficulty, and count
 - 📝 **Quiz Interface** — One question at a time, dot navigator, configurable per-question timer, hint system
-- 📊 **Results & Breakdown** — Score, grade, time taken, question-by-question review with correct answers
-- 📚 **Quiz History** — Searchable, filterable, sortable history; retake any past quiz
-- 📈 **Analytics Dashboard** — Score trends, topic performance bar chart, difficulty breakdown, knowledge radar map
+- 📊 **Results & Breakdown** — Score, grade, time taken, question-by-question review
+- 📚 **Quiz History** — Persistent history tied to user account, saved across sessions and devices
+- 📈 **Analytics Dashboard** — Score trends, topic performance, difficulty breakdown
 
-### Bonus
-- 💬 **AI Learning Assistant** — Floating chat drawer powered by GPT-4o, quiz-context aware
-- 💡 **Hint System** — Per-question AI hints with score penalty tracking
-- 🔐 **Auth (Clerk)** — Sign in/up with social providers; UI adapts to auth state
-- 📉 **Data Visualization** — Recharts: line chart, horizontal bar, radar chart
+### Authentication
+- 🔐 **Custom Auth** — Login and registration pages built with Supabase Auth
+- 👤 **Persistent Data** — Quiz history and scores saved to database, available on every login
+
+### Teacher / Student Mode (LMS)
+- 👨‍🏫 **Teacher Dashboard** — Create timed tests, set start/end window, assign to students by email
+- 🎓 **Student Dashboard** — View assigned tests, take them within the allowed time window
+- 📋 **Results Tracking** — Scores and attempts saved to Supabase database
+
+### Anti-Cheat System
+- 🔒 **Fullscreen Enforcement** — Exam runs in fullscreen; exit is flagged
+- 👁 **Tab Switch Detection** — Any tab switch or window minimization is recorded
+- 📷 **Webcam Monitoring** — Camera active during exam session
+- ⚠️ **Violation Logging** — All cheat flags saved with timestamps to database
 
 ---
 
 ## Setup
 
 ### 1. Clone & Install
-
 ```bash
-git clone https://github.com/yourusername/quizai.git
+git clone https://github.com/Kavinraj-SK/quizai.git
 cd quizai
 npm install
 ```
 
 ### 2. Environment Variables
-
 ```bash
 cp .env.example .env.local
 ```
 
 Fill in `.env.local`:
-
 ```env
-# OpenAI — https://platform.openai.com/api-keys
-OPENAI_API_KEY=sk-...
+# Cohere — https://dashboard.cohere.com
+COHERE_API_KEY=your-cohere-key
 
 # Clerk — https://dashboard.clerk.com
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
@@ -52,17 +63,19 @@ NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
 NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
 NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
+
+# Supabase — https://supabase.com
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 ```
 
 ### 3. Run
-
 ```bash
 npm run dev
 # Open http://localhost:3000
 ```
 
 ### 4. Deploy to Vercel
-
 ```bash
 npx vercel --prod
 # Add env vars in Vercel dashboard
@@ -73,46 +86,52 @@ npx vercel --prod
 ## AI Integration
 
 ### Quiz Generation (`/api/generate-quiz`)
-- Model: `gpt-4o` with `response_format: { type: "json_object" }`
-- Structured prompt enforces 4-option MCQ format with explanations
-- Error handling: rate limits (429), empty responses, parse failures
+- Model: Cohere `command-r-plus`
+- Structured prompt enforces 4-option MCQ format
+- Error handling: rate limits, empty responses, parse failures
 - All API keys proxied server-side — never exposed to client
 
 ### Chat Assistant (`/api/chat`)
-- Model: `gpt-4o` with quiz-context injected into system prompt
-- Context includes: topic, difficulty, current question text
-- Conversation history sent on each turn for multi-turn coherence
+- Context-aware AI assistant with quiz topic injected into system prompt
+- Multi-turn conversation history sent on each request
 
 ### Hint Generation (`/api/hint`)
 - Generates subtle hints without revealing the answer
-- Tracked per-session; score penalty logged in results
+- Tracked per-session with score penalty
 
 ---
 
 ## Architecture
-
 ```
 src/
 ├── app/
 │   ├── api/
-│   │   ├── generate-quiz/     # GPT-4o quiz generation
+│   │   ├── generate-quiz/     # Cohere quiz generation
 │   │   ├── chat/              # AI assistant endpoint
 │   │   └── hint/              # Per-question hints
-│   ├── quiz/                  # Quiz session page
-│   ├── results/               # Results & breakdown
+│   ├── login/                 # Custom login page
+│   ├── register/              # Custom register page
+│   ├── role-select/           # Teacher or Student selection
+│   ├── teacher/               # Teacher dashboard
+│   ├── student/               # Student dashboard
+│   ├── exam/                  # Anti-cheat exam page
+│   │   └── result/            # Exam result page
+│   ├── quiz/                  # Free quiz session
+│   ├── results/               # Quiz results
 │   ├── history/               # Quiz history
-│   ├── analytics/             # Charts & stats
-│   └── sign-in / sign-up/     # Clerk auth pages
+│   └── analytics/             # Charts & stats
 ├── components/
 │   ├── layout/Navbar.tsx
 │   └── quiz/
-│       ├── QuizCard.tsx        # Question + options
-│       ├── QuizProgress.tsx    # Progress bar + dot nav
-│       ├── QuizTimer.tsx       # SVG countdown ring
-│       └── ChatAssistant.tsx   # Floating chat drawer
-├── store/index.ts              # Zustand (3 stores + localStorage)
-├── lib/utils.ts                # Helpers, formatters, analytics builders
-└── types/index.ts              # All TypeScript types
+│       ├── QuizCard.tsx
+│       ├── QuizProgress.tsx
+│       ├── QuizTimer.tsx
+│       └── ChatAssistant.tsx
+├── lib/
+│   ├── supabase.ts            # Supabase client
+│   └── utils.ts
+├── store/index.ts             # Zustand state
+└── types/index.ts
 ```
 
 ### Key Decisions
@@ -121,28 +140,17 @@ src/
 |---|---|---|
 | State management | Zustand + persist | Lightweight, minimal boilerplate, built-in localStorage |
 | AI calls | Next.js API routes | Keys never reach client; centralized error handling |
-| GPT-4o JSON mode | `response_format: json_object` | Reliable structured output, no regex hacking |
-| Persistence | localStorage | No backend required; fast DX; sufficient for scope |
-| Auth | Clerk | Drop-in, social login, free tier generous |
+| Auth & Database | Supabase | Free tier, built-in auth, real-time DB, cross-device sync |
+| Anti-cheat | Browser APIs | Fullscreen API, visibilitychange event, getUserMedia |
 | Charts | Recharts | Best React ecosystem fit; declarative API |
-
-### State Architecture
-
-Three independent Zustand stores with `persist` middleware:
-
-- **`useQuizStore`** — Active session (questions, answers, hints, index), result, generation state. Session persists across refreshes via `partialize`.
-- **`useHistoryStore`** — All past `HistoryEntry[]`, fully persisted.
-- **`useChatStore`** — Chat messages and open state (in-memory only, no persist).
 
 ---
 
 ## Known Limitations
 
-- **No cross-device sync** — localStorage is per-browser; Supabase integration would fix this
-- **No true offline support** — AI generation requires network; PWA caching not implemented
-- **Rate limits** — OpenAI free tier has RPM limits; UI shows friendly error messages
-- **Auth is cosmetic** — Clerk provides auth UI but history isn't tied to user ID (localStorage is local); merging is a next step
-- **No question deduplication** — Same topic can produce similar questions across sessions
+- **Face recognition** — Webcam is active but ML-based face detection not yet implemented; planned via face-api.js
+- **Rate limits** — Cohere free tier has RPM limits; UI shows friendly error messages
+- **Question deduplication** — Same topic can produce similar questions across sessions
 
 ---
 
@@ -150,11 +158,15 @@ Three independent Zustand stores with `persist` middleware:
 
 | Page | Description |
 |---|---|
-| `/` | Quiz creation form with topic suggestions, difficulty, timer toggle |
-| `/quiz` | Question card, dot navigator, hint button, timer ring |
-| `/results` | Score hero, grade, per-question expandable breakdown |
-| `/history` | Searchable table with retake and delete |
-| `/analytics` | Line chart, bar chart, radar chart, stat cards |
+| `/login` | Custom login page with Supabase auth |
+| `/role-select` | Choose Teacher or Student role |
+| `/teacher` | Create and assign timed tests |
+| `/student` | View assigned tests and quiz history |
+| `/exam` | Fullscreen anti-cheat exam with webcam |
+| `/` | Quiz creation with topic, difficulty, timer |
+| `/quiz` | Question card with hint and timer |
+| `/results` | Score, grade, per-question breakdown |
+| `/analytics` | Charts and performance stats |
 
 ---
 
@@ -164,10 +176,9 @@ Three independent Zustand stores with `persist` middleware:
 - **Language**: TypeScript (strict)
 - **Styling**: Tailwind CSS
 - **State**: Zustand
-- **AI**: OpenAI GPT-4o
-- **Auth**: Clerk
+- **AI**: Cohere API
+- **Auth & Database**: Supabase
 - **Charts**: Recharts
-- **Animations**: CSS keyframes + Tailwind
 - **Fonts**: Bebas Neue (display), DM Sans (body), JetBrains Mono (mono)
 - **Icons**: Lucide React
 - **Hosting**: Vercel
