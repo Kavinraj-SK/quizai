@@ -23,17 +23,26 @@
 ### Authentication
 - 🔐 **Custom Auth** — Login and registration pages built with Supabase Auth
 - 👤 **Persistent Data** — Quiz history and scores saved to database, available on every login
+- <img width="407" height="527" alt="image" src="https://github.com/user-attachments/assets/7738dbef-86ca-4072-8733-f6431ae846cb" />
+
+  <img width="1303" height="610" alt="image" src="https://github.com/user-attachments/assets/b1e02dce-8e07-474f-a012-473ffd4b9725" />
+  
+
 
 ### Teacher / Student Mode (LMS)
-- 👨‍🏫 **Teacher Dashboard** — Create timed tests, set start/end window, assign to students by email
-- 🎓 **Student Dashboard** — View assigned tests, take them within the allowed time window
-- 📋 **Results Tracking** — Scores and attempts saved to Supabase database
+- **Teacher Dashboard** Create timed tests, set start/end window, assign to students by email
+-  **Student Dashboard** View assigned tests, take them within the allowed time window
+-  **Results Tracking**  Scores and attempts saved to Supabase database
 
-### Anti-Cheat System
-- 🔒 **Fullscreen Enforcement** — Exam runs in fullscreen; exit is flagged
-- 👁 **Tab Switch Detection** — Any tab switch or window minimization is recorded
-- 📷 **Webcam Monitoring** — Camera active during exam session
-- ⚠️ **Violation Logging** — All cheat flags saved with timestamps to database
+**- press home button or create button to navigate to quiz page**
+
+<img width="1303" height="610" alt="image" src="https://github.com/user-attachments/assets/224f15a2-f32c-4039-8586-c69562242308" />
+<img width="1303" height="610" alt="image" src="https://github.com/user-attachments/assets/cff51ecb-004d-47db-9e3d-8ca0f0226ba4" />
+<img width="1303" height="610" alt="image" src="https://github.com/user-attachments/assets/6c21cb4d-eb70-4c9c-9160-883373cd988a" />
+<img width="1303" height="610" alt="image" src="https://github.com/user-attachments/assets/0bd9061d-02e0-48e3-97de-ee39e1d7fc52" />
+
+
+
 
 ---
 
